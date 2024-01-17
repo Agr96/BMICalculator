@@ -81,9 +81,6 @@ jobs:
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
-      - name: Build Signed APK
-        uses: victorbnl/build-signed-apk@main
-
       - name: Signed APK Builder
         uses: TeamNecta/build-signed-apk@v2.1
 
