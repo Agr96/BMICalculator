@@ -81,6 +81,12 @@ jobs:
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
+      - name: Build Signed APK
+        uses: victorbnl/build-signed-apk@main
+
+      - name: Signed APK Builder
+        uses: TeamNecta/build-signed-apk@v2.1
+
       # Upload Artifact Build
       # Noted For Output [main_project_module]/build/outputs/apk/debug/
       - name: Upload APK Debug - ${{ env.repository_name }}
