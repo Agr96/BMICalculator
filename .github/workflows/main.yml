@@ -49,19 +49,43 @@ jobs:
         run: chmod +x ./gradlew
 
       # adding signing key
-      - name: Decode Keystore
-        id: decode_keystore
-        uses: timheuer/base64-to-file@v1
+      - name: Move files
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        run: |
+          mv app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/app-release.apk
+          mv app/build/outputs/bundle/release/app-release.aab app/build/outputs/app-release.aab
+
+      - name: Sign App
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        id: sign_app
+        uses: ilharp/sign-android-release@v1.0.4
         with:
-          fileName: 'keystore/your_signing_keystore.jks'
-          encodedString: ${{ secrets.KEYSTORE }}
-          
-      - name: build prod
-        run: ./gradlew app:bundleRelease
-        env:
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          releaseDir: app/build/outputs
+          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
+          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      - name: Build Changelog
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        id: changelog
+        uses: ardalanamini/auto-changelog@v3
+        with:
+          mention-authors: false
+          mention-new-contributors: false
+          include-compare: false
+          semver: false
+
+      - name: Create Release
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        id: create_release
+        uses: ncipollo/release-action@v1.13.0
+        with:
+          artifacts: "app/build/outputs/app-release-signed.aab, app/build/outputs/app-release-signed.apk"
+          body: ${{ steps.changelog.outputs.changelog }}
+          tag: ${{ github.event.head_commit.message }}
+          name: Release ${{ github.event.head_commit.message }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # Run Tests Build
       - name: Run gradle tests
