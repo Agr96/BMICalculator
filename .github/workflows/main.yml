@@ -56,18 +56,6 @@ jobs:
       - name: Build gradle project
         run: ./gradlew build
 
-      # adding signing key
-      - name: Sign App
-        if: ${{ steps.regex-match.outputs.match != '' }}
-        id: sign_app
-        uses: ilharp/sign-android-release@v1.0.4
-        with:
-          releaseDir: app/build/outputs
-          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
-          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
-
       # Create APK Debug
       - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
         run: ./gradlew assembleDebug
@@ -80,6 +68,18 @@ jobs:
       # Noted for main module build [main_project_module]:bundleRelease
       - name: Build app bundle release (AAB) - ${{ env.main_project_module }} module
         run: ./gradlew ${{ env.main_project_module }}:bundleRelease
+    
+      # adding signing key
+      - name: Sign App
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        id: sign_app
+        uses: ilharp/sign-android-release@v1.0.4
+        with:
+          releaseDir: app/build/outputs
+          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
+          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       # Upload Artifact Build
       # Noted For Output [main_project_module]/build/outputs/apk/debug/
