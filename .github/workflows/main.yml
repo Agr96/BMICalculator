@@ -76,10 +76,10 @@ jobs:
         uses: ilharp/sign-android-release@v1.0.4
         with:
           releaseDir: app/build/outputs
-          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
-          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          signingKey: ${{ secrets.SIGNING_KEY_STORE_PATH }}
+          keyAlias: ${{ secrets.SIGNING_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          keyPassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
       - name: Signed APK Builder
         uses: TeamNecta/build-signed-apk@v2.1
